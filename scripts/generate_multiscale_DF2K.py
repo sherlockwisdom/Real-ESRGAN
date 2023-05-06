@@ -2,16 +2,15 @@ import argparse
 import glob
 import os
 from PIL import Image
+import multiprocessing
 
+scale_list = [0.75, 0.5, 1 / 3]
+shortest_edge = 400
 
-def main(args):
-    # For DF2K, we consider the following three scales,
-    # and the smallest image whose shortest edge is 400
-    scale_list = [0.75, 0.5, 1 / 3]
-    shortest_edge = 400
-
-    path_list = sorted(glob.glob(os.path.join(args.input, '*')))
-    for path in path_list:
+def scaler(path):
+    """
+    """
+    try:
         print(path)
         basename = os.path.splitext(os.path.basename(path))[0]
 
@@ -33,6 +32,23 @@ def main(args):
             width = int(height * ratio)
         rlt = img.resize((int(width), int(height)), resample=Image.LANCZOS)
         rlt.save(os.path.join(args.output, f'{basename}T{idx+1}.png'))
+    except Exception as error:
+        print(error)
+
+
+def main(args):
+    # For DF2K, we consider the following three scales,
+    # and the smallest image whose shortest edge is 400
+
+    path_list = sorted(glob.glob(os.path.join(args.input, '*')))
+    """
+    for path in path_list:
+        scaler(path)
+    """
+    pool = multiprocessing.Pool(processes=12)
+    pool.map(scaler, path_list)
+    pool.close()
+    pool.join()
 
 
 if __name__ == '__main__':
