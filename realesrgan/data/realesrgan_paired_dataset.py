@@ -62,6 +62,7 @@ class RealESRGANPairedDataset(data.Dataset):
                 paths = [line.strip() for line in fin]
             self.paths = []
             for path in paths:
+                print("*** path for splitting: ", path)
                 gt_path, lq_path = path.split(', ')
                 gt_path = os.path.join(self.gt_folder, gt_path)
                 lq_path = os.path.join(self.lq_folder, lq_path)
